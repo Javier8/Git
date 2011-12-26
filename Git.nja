@@ -1,0 +1,6 @@
+{
+  "venv": "", 
+  "name": "Git", 
+  "license": "GNU General Public License v3", 
+  "description": "git support for python"
+}
