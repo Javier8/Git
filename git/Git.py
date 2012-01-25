@@ -11,6 +11,7 @@ from ninja_ide.core import plugin
 
 from PyQt4.QtCore import SIGNAL
 from PyQt4.QtCore import SLOT
+from PyQt4.QtCore import Qt
 
 from PyQt4.QtGui import QAction
 from PyQt4.QtGui import QIcon
@@ -35,7 +36,7 @@ from PyQt4.QtGui import QColor
 
 class GitStatus(QDialog):
 
-    def __init__(self,plugin,git):
+    def __init__(self,plugin,git,path):
         QDialog.__init__(self)
 
         self.git = git
@@ -44,7 +45,19 @@ class GitStatus(QDialog):
 
         layout = QGridLayout(self)
 
-        no_staged = QLabel("<h1>No staged</h1>")
+        branches = self.git.branch(path)
+
+        self.s_branches = QListWidget()
+
+        self.s_branches.addItems(branches[1:])
+
+        branch = QLabel("<h2>Branches</h2>")
+
+        self.actual_branch = QLabel("<h1>{0}</h1>".format(branches[0]))
+
+        change_branch = QPushButton("Change to")
+
+        no_staged = QLabel("<h2>No staged</h2>")
 
         untracked_files = QLabel("Untracked files")
         self.untracked_files = QListWidget()
@@ -56,7 +69,7 @@ class GitStatus(QDialog):
         self.deleted_files = QListWidget()
 
 
-        staged = QLabel("<h1>Staged</h1>")
+        staged = QLabel("<h2>Staged</h2>")
 
         added_files = QLabel("Added files")
         self.added_files = QListWidget()
@@ -67,21 +80,25 @@ class GitStatus(QDialog):
         s_deleted_files = QLabel("Deleted files")
         self.s_deleted_files = QListWidget()
 
-        layout.addWidget(no_staged,0,0)
-        layout.addWidget(untracked_files,1,0)
-        layout.addWidget(self.untracked_files,2,0)
-        layout.addWidget(modified_files,3,0)
-        layout.addWidget(self.modified_files,4,0)
-        layout.addWidget(deleted_files,5,0)
-        layout.addWidget(self.deleted_files,6,0)
+        layout.addWidget(self.actual_branch,0,0,Qt.AlignHCenter)
+        layout.addWidget(change_branch,1,0)
+        layout.addWidget(no_staged,2,0)
+        layout.addWidget(untracked_files,3,0)
+        layout.addWidget(self.untracked_files,4,0)
+        layout.addWidget(modified_files,5,0)
+        layout.addWidget(self.modified_files,6,0)
+        layout.addWidget(deleted_files,7,0)
+        layout.addWidget(self.deleted_files,8,0)
 
-        layout.addWidget(staged,0,1)
-        layout.addWidget(added_files,1,1)
-        layout.addWidget(self.added_files,2,1)
-        layout.addWidget(s_modified_files,3,1)
-        layout.addWidget(self.s_modified_files,4,1)
-        layout.addWidget(s_deleted_files,5,1)
-        layout.addWidget(self.s_deleted_files,6,1)
+        layout.addWidget(branch,0,1)
+        layout.addWidget(self.s_branches,1,1)
+        layout.addWidget(staged,2,1)
+        layout.addWidget(added_files,3,1)
+        layout.addWidget(self.added_files,4,1)
+        layout.addWidget(s_modified_files,5,1)
+        layout.addWidget(self.s_modified_files,6,1)
+        layout.addWidget(s_deleted_files,7,1)
+        layout.addWidget(self.s_deleted_files,8,1)
 
 
         self.fill(self.git.no_staged["?"],self.untracked_files)
@@ -97,10 +114,10 @@ class GitStatus(QDialog):
         self.commit_b = QPushButton('Commit files', self)
         self.uncommit_b = QPushButton("Uncommit files", self)
 
-        layout.addWidget(self.staged_b,7,0)
-        layout.addWidget(self.unstage_b,8,0)
-        layout.addWidget(self.commit_b,7,1)
-        layout.addWidget(self.uncommit_b,8,1)
+        layout.addWidget(self.staged_b,9,0)
+        layout.addWidget(self.unstage_b,10,0)
+        layout.addWidget(self.commit_b,9,1)
+        layout.addWidget(self.uncommit_b,10,1)
 
         self.setLayout(layout)
 
@@ -120,30 +137,56 @@ class GitStatus(QDialog):
 
     def add(self):
 
+
         path = self.plugin.editor.get_project_owner()
         for pos in range(self.untracked_files.count()):
 
             item = self.untracked_files.item(pos)
             widget = self.untracked_files.itemWidget(item)
+            text = widget.text()
 
             if widget.isChecked():
-                self.git.add(path,widget.text())
+                self.git.add(path,text)
+                self.untracked_files.removeItemWidget(item)
+                self.untracked_files.takeItem(pos)
+                item = QListWidgetItem()
+                self.added_files.addItem(item)
+                check_box = QCheckBox(text)
+                self.added_files.setItemWidget(item,check_box)
+
+
+
+
 
         for pos in range(self.modified_files.count()):
 
             item = self.modified_files.item(pos)
             widget = self.modified_files.itemWidget(item)
+            text = widget.text()
 
             if widget.isChecked():
                 self.git.add(path,widget.text())
+                self.modified_files.removeItemWidget(item)
+                self.modified_files.takeItem(pos)
+                item = QListWidgetItem()
+                self.s_modified_files.addItem(item)
+                check_box = QCheckBox(text)
+                self.s_modified_files.setItemWidget(item,check_box)
 
         for pos in range(self.deleted_files.count()):
 
             item = self.deleted_files.item(pos)
             widget = self.deleted_files.itemWidget(item)
+            text = widget.text()
 
             if widget.isChecked():
                 self.git.add(path,widget.text())
+                self.deleted_files.removeItemWidget(item)
+                self.deleted_files.takeItem(pos)
+                item = QListWidgetItem()
+                self.s_deleted_files.addItem(item)
+                check_box = QCheckBox(text)
+                self.s_deleted_files.setItemWidget(item,check_box)
 
     def unstage(self):
 
@@ -157,6 +200,8 @@ class GitStatus(QDialog):
 
             if widget.isChecked():
                 self.git.unstage(path,widget.text())
+                self.untracked_files.removeItemWidget(item)
+                self.untracked_files.takeItem(pos)
 
         for pos in range(self.modified_files.count()):
 
@@ -165,6 +210,8 @@ class GitStatus(QDialog):
 
             if widget.isChecked():
                 self.git.unstage(path,widget.text())
+                self.modified_files.removeItemWidget(item)
+                self.modified_files.takeItem(pos)
 
         for pos in range(self.deleted_files.count()):
 
@@ -173,6 +220,8 @@ class GitStatus(QDialog):
 
             if widget.isChecked():
                 self.git.unstage(path,widget.text())
+                self.deleted_files.removeItemWidget(item)
+                self.deleted_files.takeItem(pos)
 
     def commit(self):
 
@@ -189,6 +238,8 @@ class GitStatus(QDialog):
 
             if widget.isChecked():
                 self.git.commit(path,str(widget.text()),msg[0])
+                self.added_files.removeItemWidget(item)
+                self.added_files.takeItem(pos)
 
         for pos in range(self.s_modified_files.count()):
 
@@ -196,17 +247,20 @@ class GitStatus(QDialog):
             widget = self.s_modified_files.itemWidget(item)
 
             if widget.isChecked():
-                print 'si'
                 self.git.commit(path,widget.text(),msg[0])
+                self.s_modified_files.removeItemWidget(item)
+                self.s_modified_files.takeItem(pos)
 
         for pos in range(self.s_deleted_files.count()):
 
             item = self.s_deleted_files.item(pos)
             widget = self.s_deleted_files.itemWidget(item)
 
+
             if widget.isChecked():
                 self.git.commit(path,widget.text(),msg[0])
-
+                self.s_deleted_files.takeItem(pos)
+                self.s_deleted_files.removeItemWidget(item)
 
     def uncommit(self):
 
@@ -216,26 +270,59 @@ class GitStatus(QDialog):
 
             item = self.added_files.item(pos)
             widget = self.added_files.itemWidget(item)
+            text = widget.text()
 
             if widget.isChecked():
                 self.git.uncommit(path,str(widget.text()))
+                self.added_files.removeItemWidget(item)
+                self.added_files.takeItem(pos)
+                item = QListWidgetItem()
+                self.untracked_files.addItem(item)
+                check_box = QCheckBox(text)
+                self.untracked_files.setItemWidget(item,check_box)
 
         for pos in range(self.s_modified_files.count()):
 
             item = self.s_modified_files.item(pos)
             widget = self.s_modified_files.itemWidget(item)
+            text = widget.text()
 
             if widget.isChecked():
                 self.git.uncommit(path,widget.text())
+                self.s_modified_files.removeItemWidget(item)
+                self.s_modified_files.takeItem(pos)
+                item = QListWidgetItem()
+                self.modified_files.addItem(item)
+                check_box = QCheckBox(text)
+                self.modified_files.setItemWidget(item,check_box)
 
         for pos in range(self.s_deleted_files.count()):
 
             item = self.s_deleted_files.item(pos)
             widget = self.s_deleted_files.itemWidget(item)
+            text = widget.text()
 
             if widget.isChecked():
                 self.git.uncommit(path,widget.text())
+                self.s_deleted_files.removeItemWidget(item)
+                self.s_deleted_files.takeItem(pos)
+                item = QListWidgetItem()
+                self.deleted_files.addItem(item)
+                check_box = QCheckBox(text)
+                self.deleted_files.setItemWidget(item,check_box)
 
+    def change_branch(self):
+
+        path = self.plugin.editor.get_project_owner()
+
+        item = self.s_branches.currentItem()
+        if item:
+            text = item.text()
+
+
+            self.git.change_branch(path,text)
+
+            self.s_branches.takeItem(item)
 
 class Git(plugin.Plugin):
 
@@ -272,7 +359,7 @@ class Git(plugin.Plugin):
 
     def finish(self):
 
-        print 'plugin is being killed =('
+        print 'plugin Git is being killed =('
 
     def get_preferences_widget(self):
 
@@ -298,7 +385,10 @@ class Git(plugin.Plugin):
         check = self.git.check_git(path)
 
         if check == True:
-            self.status()
+            self.status()#status
+            #solas
+            #mas
+            #dol
 
         else:
 
@@ -328,7 +418,7 @@ class Git(plugin.Plugin):
         path = self.editor.get_project_owner()
         self.git.status(path)
 
-        info = GitStatus(self,self.git)
+        info = GitStatus(self,self.git,path)
         info.exec_()
 
 
@@ -337,6 +427,7 @@ class Git(plugin.Plugin):
         self.git = git.Git()
         path = self.editor.get_project_owner()
         file = self.editor.get_editor_path()
+        text_file = self.editor.get_editor().get_text()
 
         if state:
             self.editor.add_editor('staged({0})'.format(os.path.basename(file)))
@@ -345,15 +436,17 @@ class Git(plugin.Plugin):
             self.editor.add_editor('commited({0})'.format(os.path.basename(file)))
 
         editor = self.editor.get_editor()
-        self.text[editor] = self.git.text(path,file,state)
-        editor.insertPlainText(self.text[editor][0])
+        self.text[editor] = self.git.text(path,file,state,text_file)
+        editor.insertPlainText(self.text[editor][2])
 
 
         self.connect(editor,SIGNAL("cursorPositionChanged()"), self.highlight)
 
         text = self.text[editor]
 
+
         for line in text[1]:
+
             if text[1][line] == "=":
                 continue
 
@@ -382,6 +475,7 @@ class Git(plugin.Plugin):
         editor = self.editor.get_editor()
         text = self.text[editor]
         for line in text[1]:
+            print line
             if text[1][line] == "=" :
                 continue
 
@@ -402,6 +496,6 @@ class Git(plugin.Plugin):
 
         editor.setExtraSelections(editor.extraSelections)
         editor.setReadOnly(True)
-        editor.Document().setModified(False)
+        #editor.Document().setModified(False)
 
 
