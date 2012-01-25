@@ -12,8 +12,6 @@ from ninja_ide.core import plugin
 from PyQt4.QtCore import SIGNAL
 from PyQt4.QtCore import SLOT
 
-#coment
-"pedo"
 from PyQt4.QtGui import QAction
 from PyQt4.QtGui import QIcon
 from PyQt4.QtGui import QMenu
@@ -406,5 +404,4 @@ class Git(plugin.Plugin):
         editor.setReadOnly(True)
         editor.Document().setModified(False)
 
-#O
 
