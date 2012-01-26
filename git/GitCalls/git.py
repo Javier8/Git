@@ -211,8 +211,10 @@ class Git():
 
         p = os.getcwd()
         os.chdir(path)
-        call = subprocess.call(["git","checkout",branch])
+        call = subprocess.call(["git","merge",branch])
         os.chdir(p)
+        if call == 1:
+            return "Cant merge branches"
 
     def force_delete_branch(self,path,branch):
 
