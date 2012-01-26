@@ -381,13 +381,27 @@ class GitStatus(QDialog):
 
         if item:
 
-            text = item.text()
-            self.git.delete_branch(path,text)
+            text = str(item.text())
+            call = self.git.delete_branch(path,text)
 
-            self.s_branches.clear()
+            if not call:
+                self.s_branches.clear()
 
-            self.s_branches.addItems(self.git.branch(path)[1:])
+                self.s_branches.addItems(self.git.branch(path)[1:])
 
+            else:
+                m = QMessageBox()
+                m.setText("<h2>"+call+"</h2>")
+                m.setInformativeText("Force deletion?")
+                m.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+                m.setDefaultButton(QMessageBox.Cancel)
+                c = m.exec_()
+                if c == QMessageBox.Ok:
+
+                    self.git.force_delete_branch(path,text)
+                    self.s_branches.clear()
+
+                    self.s_branches.addItems(self.git.branch(path)[1:])
 
     def something(self):
 
