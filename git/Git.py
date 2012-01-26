@@ -403,6 +403,24 @@ class GitStatus(QDialog):
 
                     self.s_branches.addItems(self.git.branch(path)[1:])
 
+    def merge_branches(self):
+
+        path = self.plugin.editor.get_project_owner()
+
+        item = self.s_branches.currentItem()
+
+        if item:
+            text = str(item.text())
+
+            call = self.git.merge_branches(path,text)
+
+            if call:
+
+                m = QMessageBox()
+                m.setText(call)
+                m.setInformativeText()
+                m.setIcon(m.Critical)
+                m.exec_()
     def something(self):
 
         for x in self.lists:
