@@ -352,7 +352,7 @@ class GitStatus(QDialog):
             try:
                 print x.text()
             except:
-                pass
+                a=1
 
             if x.count() > 0:
 
