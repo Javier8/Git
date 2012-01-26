@@ -1,4 +1,4 @@
-# -*- coding: utf-8 *-*#cambio
+# -*- coding: utf-8 *-*
 import subprocess
 import os
 import re
