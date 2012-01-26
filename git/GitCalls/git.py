@@ -202,7 +202,7 @@ class Git():
         if branch != "master":
             p = os.getcwd()
             os.chdir(path)
-            call = subprocess.call(["git","checkout",branch])
+            call = subprocess.call(["git","branch","-d",branch])
             os.chdir(p)
 
     def merge_branches(self,path,branch):
