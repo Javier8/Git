@@ -43,6 +43,7 @@ class GitStatus(QDialog):
         self.plugin = plugin
         self.setWindowTitle('Git status')
 
+
         layout = QGridLayout(self)
 
         branches = self.git.branch(path)
@@ -53,32 +54,39 @@ class GitStatus(QDialog):
 
         branch = QLabel("<h2>Branches</h2>")
 
-        self.actual_branch = QLabel("<h1>{0}</h1>".format(branches[0]))
+        self.actual_branch = QLabel("<h2>{0}</h2>".format(branches[0]))
 
         change_branch = QPushButton("Change to")
+
+        self.lists = []
 
         no_staged = QLabel("<h2>No staged</h2>")
 
         untracked_files = QLabel("Untracked files")
         self.untracked_files = QListWidget()
+        self.lists.append(self.untracked_files)
 
         modified_files = QLabel("Modified files")
         self.modified_files = QListWidget()
+        self.lists.append(self.modified_files)
 
         deleted_files = QLabel("Deleted files")
         self.deleted_files = QListWidget()
-
+        self.lists.append(self.deleted_files)
 
         staged = QLabel("<h2>Staged</h2>")
 
         added_files = QLabel("Added files")
         self.added_files = QListWidget()
+        self.lists.append(self.added_files)
 
         s_modified_files = QLabel("Modified files")
         self.s_modified_files = QListWidget()
+        self.lists.append(self.s_modified_files)
 
         s_deleted_files = QLabel("Deleted files")
         self.s_deleted_files = QListWidget()
+        self.lists.append(s_deleted_files)
 
         layout.addWidget(self.actual_branch,0,0,Qt.AlignHCenter)
         layout.addWidget(change_branch,1,0)
@@ -317,8 +325,8 @@ class GitStatus(QDialog):
         path = self.plugin.editor.get_project_owner()
 
         item = self.s_branches.currentItem()
-        print item
-        if item:
+
+        if item and not self.something():
             text = item.text()
 
 
@@ -328,7 +336,24 @@ class GitStatus(QDialog):
 
             self.s_branches.addItems(self.git.branch(path)[1:])
 
-            self.actual_branch.setText("<h1>{0}<h1>".format(text))
+            self.actual_branch.setText("<h2>{0}<h2>".format(text))
+
+        if self.something():
+
+            v = QMessageBox()
+            v.setText("Error: you have unsaved changes")
+            v.setIcon(v.Warning)
+            v.exec_()
+
+    def something(self):
+
+        for x in self.lists:
+
+            if x.count() > 0:
+
+                return True
+
+        return False
 class Git(plugin.Plugin):
 
     def initialize(self):
