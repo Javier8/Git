@@ -326,10 +326,9 @@ class GitStatus(QDialog):
 
             self.s_branches.clear()
 
-            self.actual_branch.setText("<h1>{0}<h1>".format(text))
-
             self.s_branches.addItems(self.git.branch(path)[1:])
 
+            self.actual_branch.setText("<h1>{0}<h1>".format(text))
 class Git(plugin.Plugin):
 
     def initialize(self):
