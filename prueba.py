@@ -52,6 +52,13 @@ class WG(QWidget):
         g.addWidget(QLabel("derecha"),1,1)
         g.addWidget(QLabel("derecha2"),2,1)
 
+
+        w = QMessageBox()
+        w.setText("No es posible cambiar")
+        w.setIcon(w.Warning)
+
+        w.exec_()
+
 app = QApplication(sys.argv)
 icon = WG()
 icon.show()
