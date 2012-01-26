@@ -147,6 +147,7 @@ class GitStatus(QDialog):
         self.connect(self.uncommit_b,SIGNAL('clicked()'), self.uncommit)
         self.connect(change_branch,SIGNAL("clicked()"),self.change_branch)
         self.connect(add_branch,SIGNAL("clicked()"),self.add_branch)
+        self.connect(delete_branch,SIGNAL("clicked()"), self.delete_branch)
 
     def fill(self,list,widget_list):
 
@@ -372,6 +373,20 @@ class GitStatus(QDialog):
 
         self.s_branches.addItems(self.git.branch(path)[1:])
 
+    def delete_branch(self):
+
+        path = self.plugin.editor.get_project_owner()
+
+        item = self.s_branches.currentItem()
+
+        if item:
+
+            text = item.text()
+            self.git.delete_branch(path,text)
+
+            self.s_branches.clear()
+
+            self.s_branches.addItems(self.git.branch(path)[1:])
 
 
     def something(self):
