@@ -349,6 +349,11 @@ class GitStatus(QDialog):
 
         for x in self.lists:
 
+            try:
+                print x.text()
+            except:
+                pass
+
             if x.count() > 0:
 
                 return True
