@@ -148,6 +148,7 @@ class GitStatus(QDialog):
         self.connect(change_branch,SIGNAL("clicked()"),self.change_branch)
         self.connect(add_branch,SIGNAL("clicked()"),self.add_branch)
         self.connect(delete_branch,SIGNAL("clicked()"), self.delete_branch)
+        self.connect(merge_branches,SIGNAL("clicked()"),self.merge_branches)
 
     def fill(self,list,widget_list):
 
@@ -418,7 +419,7 @@ class GitStatus(QDialog):
 
                 m = QMessageBox()
                 m.setText(call)
-                m.setInformativeText()
+                m.setInformativeText("Unknown")
                 m.setIcon(m.Critical)
                 m.exec_()
     def something(self):
