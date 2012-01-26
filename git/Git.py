@@ -441,17 +441,17 @@ class Git(plugin.Plugin):
         self.explorer = self.locator.get_service('explorer')
 
         git_status = QAction(QIcon('/home/luis/.ninja_ide/addins/plugins/git/IMG/logo.png'),'GIT status', self)
-        git_stage = QAction(QIcon('/home/luis/.ninja_ide/addins/plugins/git/IMG/stage.png'), 'Stage Current File',self)
-        git_commit = QAction(QIcon('/home/luis/.ninja_ide/addins/plugins/git/IMG/commit.png'), 'Commit Current Changes',self)
+        git_unstage = QAction(QIcon('/home/luis/.ninja_ide/addins/plugins/git/IMG/stage.png'), 'Show unstaged changes',self)
+        git_stage = QAction(QIcon('/home/luis/.ninja_ide/addins/plugins/git/IMG/commit.png'), 'Show staged Changes',self)
         self.toolbar.add_action(git_status)
+        self.toolbar.add_action(git_unstage)
         self.toolbar.add_action(git_stage)
-        self.toolbar.add_action(git_commit)
 
         self.connect(git_status, SIGNAL('triggered()'), self.check_git)
 
-        self.connect(git_stage,SIGNAL('triggered()'), lambda: self.text_call("--staged"))
+        self.connect(git_unstage,SIGNAL('triggered()'), self.text_call)
 
-        self.connect(git_commit,SIGNAL('triggered()'), self.text_call)
+        self.connect(git_stage,SIGNAL('triggered()'), lambda: self.text_call("--staged"))
 
         self.explorer.projectOpened.connect(self.check_project)
 
@@ -540,7 +540,7 @@ class Git(plugin.Plugin):
             self.editor.add_editor('staged({0})'.format(os.path.basename(file)))
 
         else:
-            self.editor.add_editor('commited({0})'.format(os.path.basename(file)))
+            self.editor.add_editor('unstaged({0})'.format(os.path.basename(file)))
 
         editor = self.editor.get_editor()
         self.text[editor] = self.git.text(path,file,state,text_file)
@@ -603,6 +603,5 @@ class Git(plugin.Plugin):
 
         editor.setExtraSelections(editor.extraSelections)
         editor.setReadOnly(True)
-        #editor.Document().setModified(False)
 
 
