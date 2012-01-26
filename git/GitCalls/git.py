@@ -187,3 +187,36 @@ class Git():
         os.chdir(p)
 
 
+
+    def add_branch(self,path,branch):
+
+
+        p = os.getcwd()
+        os.chdir(path)
+        call = subprocess.call(["git","branch",branch])
+        os.chdir(p)
+
+
+    def delete_branch(self,path,branch):
+
+        if branch != "master":
+            p = os.getcwd()
+            os.chdir(path)
+            call = subprocess.call(["git","checkout",branch])
+            os.chdir(p)
+
+    def merge_branches(self,path,branch):
+
+
+        p = os.getcwd()
+        os.chdir(path)
+        call = subprocess.call(["git","checkout",branch])
+        os.chdir(p)
+
+    def force_delete_branch(self,path,branch):
+
+        if branch != "master":
+            p = os.getcwd()
+            os.chdir(path)
+            call = subprocess.call(["git","checkout",branch])
+            os.chdir(p)
