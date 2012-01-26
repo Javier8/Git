@@ -57,6 +57,15 @@ class GitStatus(QDialog):
         self.actual_branch = QLabel("<h2>{0}</h2>".format(branches[0]))
 
         change_branch = QPushButton("Change to")
+        merge_branches = QPushButton("Merge branch")
+
+
+        H = QHBoxLayout()
+        delete_branch = QPushButton("Delete branch")
+        add_branch = QPushButton("Add branch")
+        H.addWidget(add_branch)
+        H.addWidget(delete_branch)
+
 
         self.lists = []
 
@@ -90,23 +99,25 @@ class GitStatus(QDialog):
 
         layout.addWidget(self.actual_branch,0,0,Qt.AlignHCenter)
         layout.addWidget(change_branch,1,0)
-        layout.addWidget(no_staged,2,0)
-        layout.addWidget(untracked_files,3,0)
-        layout.addWidget(self.untracked_files,4,0)
-        layout.addWidget(modified_files,5,0)
-        layout.addWidget(self.modified_files,6,0)
-        layout.addWidget(deleted_files,7,0)
-        layout.addWidget(self.deleted_files,8,0)
+        layout.addWidget(merge_branches,2,0)
+        layout.addWidget(no_staged,3,0)
+        layout.addWidget(untracked_files,4,0)
+        layout.addWidget(self.untracked_files,5,0)
+        layout.addWidget(modified_files,6,0)
+        layout.addWidget(self.modified_files,7,0)
+        layout.addWidget(deleted_files,8,0)
+        layout.addWidget(self.deleted_files,9,0)
 
         layout.addWidget(branch,0,1)
         layout.addWidget(self.s_branches,1,1)
-        layout.addWidget(staged,2,1)
-        layout.addWidget(added_files,3,1)
-        layout.addWidget(self.added_files,4,1)
-        layout.addWidget(s_modified_files,5,1)
-        layout.addWidget(self.s_modified_files,6,1)
-        layout.addWidget(s_deleted_files,7,1)
-        layout.addWidget(self.s_deleted_files,8,1)
+        layout.addLayout(H,2,1)
+        layout.addWidget(staged,3,1)
+        layout.addWidget(added_files,4,1)
+        layout.addWidget(self.added_files,5,1)
+        layout.addWidget(s_modified_files,6,1)
+        layout.addWidget(self.s_modified_files,7,1)
+        layout.addWidget(s_deleted_files,8,1)
+        layout.addWidget(self.s_deleted_files,9,1)
 
 
         self.fill(self.git.no_staged["?"],self.untracked_files)
@@ -122,10 +133,11 @@ class GitStatus(QDialog):
         self.commit_b = QPushButton('Commit files', self)
         self.uncommit_b = QPushButton("Uncommit files", self)
 
-        layout.addWidget(self.staged_b,9,0)
-        layout.addWidget(self.unstage_b,10,0)
-        layout.addWidget(self.commit_b,9,1)
-        layout.addWidget(self.uncommit_b,10,1)
+        layout.addWidget(self.staged_b,10,0)
+        layout.addWidget(self.unstage_b,11,0)
+        layout.addWidget(self.commit_b,10,1)
+        layout.addWidget(self.uncommit_b,11,1)
+
 
         self.setLayout(layout)
 
@@ -134,6 +146,7 @@ class GitStatus(QDialog):
         self.connect(self.commit_b, SIGNAL('clicked()'),self.commit)
         self.connect(self.uncommit_b,SIGNAL('clicked()'), self.uncommit)
         self.connect(change_branch,SIGNAL("clicked()"),self.change_branch)
+        self.connect(add_branch,SIGNAL("clicked()"),self.add_branch)
 
     def fill(self,list,widget_list):
 
@@ -342,6 +355,24 @@ class GitStatus(QDialog):
             v.setText("Error: you have unsaved changes")
             v.setIcon(v.Warning)
             v.exec_()
+
+    def add_branch(self):
+
+        path = self.plugin.editor.get_project_owner()
+        item = self.s_branches.currentItem()
+
+        msg = QInputDialog.getText(self,"New branch","Branch Name:")
+
+        if msg[1] == False:
+            return(0)
+
+        self.git.add_branch(path,msg[0])
+
+        self.s_branches.clear()
+
+        self.s_branches.addItems(self.git.branch(path)[1:])
+
+
 
     def something(self):
 
