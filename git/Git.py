@@ -322,7 +322,11 @@ class GitStatus(QDialog):
 
             self.git.change_branch(path,text)
 
-            self.s_branches.takeItem(item)
+            self.s_branches.clear()
+
+            self.actual_branch.setText("<h1>{0}<h1>".format(text))
+
+            self.s_branches.addItems(self.git.branch(path)[1:])
 
 class Git(plugin.Plugin):
 
