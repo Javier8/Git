@@ -125,6 +125,7 @@ class GitStatus(QDialog):
         self.connect(self.unstage_b,SIGNAL('clicked()'), self.unstage)
         self.connect(self.commit_b, SIGNAL('clicked()'),self.commit)
         self.connect(self.uncommit_b,SIGNAL('clicked()'), self.uncommit)
+        self.connect(change_branch,SIGNAL("clicked()"),self.change_branch)
 
     def fill(self,list,widget_list):
 
@@ -316,6 +317,7 @@ class GitStatus(QDialog):
         path = self.plugin.editor.get_project_owner()
 
         item = self.s_branches.currentItem()
+        print item
         if item:
             text = item.text()
 
