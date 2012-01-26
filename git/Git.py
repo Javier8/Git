@@ -86,7 +86,7 @@ class GitStatus(QDialog):
 
         s_deleted_files = QLabel("Deleted files")
         self.s_deleted_files = QListWidget()
-        self.lists.append(s_deleted_files)
+        self.lists.append(self.s_deleted_files)
 
         layout.addWidget(self.actual_branch,0,0,Qt.AlignHCenter)
         layout.addWidget(change_branch,1,0)

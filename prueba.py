@@ -57,7 +57,7 @@ class WG(QWidget):
         w.setText("No es posible cambiar")
         w.setIcon(w.Warning)
 
-        w.exec_()
+        w.exec_()#hol
 
 app = QApplication(sys.argv)
 icon = WG()
