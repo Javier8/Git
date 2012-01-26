@@ -148,7 +148,7 @@ class GitStatus(QDialog):
 
 
         path = self.plugin.editor.get_project_owner()
-        for pos in range(self.untracked_files.count()):
+        for pos in reversed(xrange(self.untracked_files.count())):
 
             item = self.untracked_files.item(pos)
             widget = self.untracked_files.itemWidget(item)
@@ -167,7 +167,7 @@ class GitStatus(QDialog):
 
 
 
-        for pos in range(self.modified_files.count()):
+        for pos in reversed(xrange(self.modified_files.count())):
 
             item = self.modified_files.item(pos)
             widget = self.modified_files.itemWidget(item)
@@ -182,7 +182,7 @@ class GitStatus(QDialog):
                 check_box = QCheckBox(text)
                 self.s_modified_files.setItemWidget(item,check_box)
 
-        for pos in range(self.deleted_files.count()):
+        for pos in reversed(xrange(self.deleted_files.count())):
 
             item = self.deleted_files.item(pos)
             widget = self.deleted_files.itemWidget(item)
@@ -199,10 +199,8 @@ class GitStatus(QDialog):
 
     def unstage(self):
 
-
-
         path = self.plugin.editor.get_project_owner()
-        for pos in range(self.untracked_files.count()):
+        for pos in reversed(xrange(self.untracked_files.count())):
 
             item = self.untracked_files.item(pos)
             widget = self.untracked_files.itemWidget(item)
@@ -212,7 +210,7 @@ class GitStatus(QDialog):
                 self.untracked_files.removeItemWidget(item)
                 self.untracked_files.takeItem(pos)
 
-        for pos in range(self.modified_files.count()):
+        for pos in reversed(xrange(self.modified_files.count())):
 
             item = self.modified_files.item(pos)
             widget = self.modified_files.itemWidget(item)
@@ -222,7 +220,7 @@ class GitStatus(QDialog):
                 self.modified_files.removeItemWidget(item)
                 self.modified_files.takeItem(pos)
 
-        for pos in range(self.deleted_files.count()):
+        for pos in reversed(xrange(self.deleted_files.count())):
 
             item = self.deleted_files.item(pos)
             widget = self.deleted_files.itemWidget(item)
@@ -240,7 +238,7 @@ class GitStatus(QDialog):
             return(0)
 
         path = self.plugin.editor.get_project_owner()
-        for pos in range(self.added_files.count()):
+        for pos in reversed(xrange(self.added_files.count())):
 
             item = self.added_files.item(pos)
             widget = self.added_files.itemWidget(item)
@@ -250,7 +248,7 @@ class GitStatus(QDialog):
                 self.added_files.removeItemWidget(item)
                 self.added_files.takeItem(pos)
 
-        for pos in range(self.s_modified_files.count()):
+        for pos in reversed(xrange(self.s_modified_files.count())):
 
             item = self.s_modified_files.item(pos)
             widget = self.s_modified_files.itemWidget(item)
@@ -260,7 +258,7 @@ class GitStatus(QDialog):
                 self.s_modified_files.removeItemWidget(item)
                 self.s_modified_files.takeItem(pos)
 
-        for pos in range(self.s_deleted_files.count()):
+        for pos in reversed(xrange(self.s_deleted_files.count())):
 
             item = self.s_deleted_files.item(pos)
             widget = self.s_deleted_files.itemWidget(item)
@@ -275,7 +273,7 @@ class GitStatus(QDialog):
 
 
         path = self.plugin.editor.get_project_owner()
-        for pos in range(self.added_files.count()):
+        for pos in reversed(xrange(self.added_files.count())):
 
             item = self.added_files.item(pos)
             widget = self.added_files.itemWidget(item)
@@ -290,7 +288,7 @@ class GitStatus(QDialog):
                 check_box = QCheckBox(text)
                 self.untracked_files.setItemWidget(item,check_box)
 
-        for pos in range(self.s_modified_files.count()):
+        for pos in reversed(xrange(self.s_modified_files.count())):
 
             item = self.s_modified_files.item(pos)
             widget = self.s_modified_files.itemWidget(item)
@@ -305,7 +303,7 @@ class GitStatus(QDialog):
                 check_box = QCheckBox(text)
                 self.modified_files.setItemWidget(item,check_box)
 
-        for pos in range(self.s_deleted_files.count()):
+        for pos in reversed(xrange(self.s_deleted_files.count())):
 
             item = self.s_deleted_files.item(pos)
             widget = self.s_deleted_files.itemWidget(item)
