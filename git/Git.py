@@ -50,11 +50,17 @@ class GitStatus(QDialog):
 
         self.s_branches = QListWidget()
 
-        self.s_branches.addItems(branches[1:])
+        if len(branches) > 0:
+            self.s_branches.addItems(branches[1:])
+            self.actual_branch = QLabel("<h2>{0}</h2>".format(branches[0]))
+
+        else:
+
+            self.actual_branch = QLabel()
+
 
         branch = QLabel("<h2>Branches</h2>")
 
-        self.actual_branch = QLabel("<h2>{0}</h2>".format(branches[0]))
 
         change_branch = QPushButton("Change to")
         merge_branches = QPushButton("Merge branch")
@@ -440,9 +446,13 @@ class Git(plugin.Plugin):
         self.menu = self.locator.get_service('menuApp')
         self.explorer = self.locator.get_service('explorer')
 
-        git_status = QAction(QIcon('/home/luis/.ninja_ide/addins/plugins/git/IMG/logo.png'),'GIT status', self)
-        git_unstage = QAction(QIcon('/home/luis/.ninja_ide/addins/plugins/git/IMG/stage.png'), 'Show unstaged changes',self)
-        git_stage = QAction(QIcon('/home/luis/.ninja_ide/addins/plugins/git/IMG/commit.png'), 'Show staged Changes',self)
+        self.plug_path = os.path.abspath(__file__)
+        self.plug_path = os.path.dirname(self.path)
+        print self.plug_path
+
+        git_status = QAction(QIcon(self.plug_path+'/git/IMG/logo.png'),'GIT status', self)
+        git_unstage = QAction(QIcon(self.plug_path+'/git/IMG/stage.png'), 'Show unstaged changes',self)
+        git_stage = QAction(QIcon(self.plug_path+'/git/IMG/commit.png'), 'Show staged Changes',self)
         self.toolbar.add_action(git_status)
         self.toolbar.add_action(git_unstage)
         self.toolbar.add_action(git_stage)
@@ -479,7 +489,7 @@ class Git(plugin.Plugin):
 
             item = self.tree.topLevelItem(x)
             if path == item.path and self.git.check_git(path) == True:
-                item.setIcon(0,QIcon('/home/luis/.ninja_ide/addins/plugins/git/IMG/g.png'))
+                item.setIcon(0,QIcon(self.plug_path+'/git/IMG/g.png'))
 
             x+=1
 
@@ -501,8 +511,8 @@ class Git(plugin.Plugin):
 
             project_name = self.editor.get_project_owner()
             msgBox = QMessageBox()
-            msgBox.setText("Soporte Git no habilitado")
-            msgBox.setInformativeText("Desea habilitarlo?")
+            msgBox.setText("<h2>Git not enabled</h2>")
+            msgBox.setInformativeText("Do you want to enable it?")
             msgBox.setStandardButtons(QMessageBox.Ok |  QMessageBox.Cancel)
             msgBox.setDefaultButton(QMessageBox.Cancel)
             if msgBox.exec_() == QMessageBox.Ok:
@@ -513,9 +523,16 @@ class Git(plugin.Plugin):
         path = self.editor.get_project_owner()
         check = self.git.init(path)
 
+        x = 0
+        while self.tree.topLevelItem(x):
+            item = self.tree.topLevelItem(x)
+            if path == item.path:
+                item.setIcon(0,QIcon(self.plug_path+'/git/IMG/g.png'))
+                break
+            x+=1
 
         msgBox = QMessageBox()
-        msgBox.setText("Soporte git añadido a proyecto")
+        msgBox.setText("Git added to project")
         msgBox.setInformativeText(check)
         msgBox.exec_()
 

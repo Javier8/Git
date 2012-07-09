@@ -96,7 +96,7 @@ class Git():
                 pattern = r"@@ .(\d+),(\d+) .(\d+),(\d+) @@"
                 s = re.compile(pattern)
                 pos = s.search(line).groups()
-                current = int(pos[2])
+                current = int(pos[2])-1
                 continue
 
 
@@ -126,7 +126,7 @@ class Git():
 
         final =""
         for t in file_text:
-            final+=t+"\n"
+            final+=t.decode("utf-8")+"\n"
         return(source,source_info,final)
 
     def add(self,path,file):
